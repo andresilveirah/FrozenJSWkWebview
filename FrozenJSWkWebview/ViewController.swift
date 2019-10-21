@@ -11,9 +11,12 @@ class ViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view.
+        let controller = FrozenWebViewController()
+        controller.loadMessage()
+        DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
+            print("presenting controller...")
+            self.present(controller, animated: false, completion: nil)
+        }
     }
-
-
 }
 
