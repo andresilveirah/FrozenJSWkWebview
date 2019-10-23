@@ -26,6 +26,7 @@ class FrozenWebViewController: UIViewController, WKScriptMessageHandler {
             </body>
         </html>
     """
+
     let script = WKUserScript(source: """
         JSReceiver = {
             greet: function (message) {

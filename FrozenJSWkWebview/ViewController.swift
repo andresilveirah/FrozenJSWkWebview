@@ -8,15 +8,21 @@
 import UIKit
 
 class ViewController: UIViewController {
+    lazy var controller: FrozenWebViewController = {
+        return FrozenWebViewController()
+    }()
 
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        let controller = FrozenWebViewController()
-        controller.loadMessage()
-        DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
+    func present(_ controller: UIViewController, after deadline: DispatchTime) {
+        DispatchQueue.main.asyncAfter(deadline: deadline) {
             print("presenting controller...")
             self.present(controller, animated: false, completion: nil)
         }
+    }
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        controller.loadMessage()
+        present(controller, after: .now() + 10)
     }
 }
 
