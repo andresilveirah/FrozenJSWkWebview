@@ -8,40 +8,56 @@
 import UIKit
 import WebKit
 
+protocol MessageDelegate {
+    func onMessageReady()
+    func onConsentReady()
+}
+
 class FrozenWebViewController: UIViewController, WKScriptMessageHandler {
-    let blankPage = """
-        <html>
-            <head></head>
-            <body>
-              <h1>Hello World</h1>
-              <script>
-                var counter = 0
-                setInterval(function() {
-                  JSReceiver.greet("Ping: " + counter++)
-                }, 1000);
-                setTimeout(function() {
-                  JSReceiver.greet("I'm a sneaky one!")
-                }, 5000);
-              </script>
-            </body>
-        </html>
-    """
+    static let MESSAGE_HANDLER_NAME = "JSReceiver"
+
+    var messageDelegate: MessageDelegate?
+
+    func inAppPage(consented: Bool) -> String {
+        return """
+            <html>
+                <head>
+                  <meta name="viewport" content="width=device-width, initial-scale=1, height=device-height, viewport-fit=cover, user-scalable=no">
+                </head>
+                <body style="padding: 50px">
+                  <h1>Consent Message</h1>
+                  <button onclick="JSReceiver.onConsentReady()">Accept</butto>
+                  <script>
+                    var counter = 0
+                    setInterval(function() { JSReceiver.ping("Ping: " + counter++) }, 1000);
+
+                    \(consented ?
+                        "setTimeout(function() { JSReceiver.onConsentReady(); }, 5000);" :
+                        "setTimeout(function() { JSReceiver.onMessageReady(); }, 5000);"
+                   )
+                  </script>
+                </body>
+            </html>
+        """
+    }
 
     let script = WKUserScript(source: """
         JSReceiver = {
-            greet: function (message) {
-                webkit.messageHandlers.JSReceiver.postMessage(message)
-            }
+            postMessage: function(message) { webkit.messageHandlers.JSReceiver.postMessage(message) },
+            ping: function(message) { this.postMessage(message) },
+            onMessageReady: function() { this.postMessage("onMessageReady") },
+            onConsentReady: function() { this.postMessage("onConsentReady") }
         }
-    """, injectionTime: .atDocumentStart, forMainFrameOnly: true)
+        """ ,injectionTime: .atDocumentStart, forMainFrameOnly: true)
 
     lazy var webView: WKWebView! = {
         let config = WKWebViewConfiguration()
         let userContentController = WKUserContentController()
         userContentController.addUserScript(script)
-        userContentController.add(self, name: "JSReceiver")
+        userContentController.add(self, name: FrozenWebViewController.MESSAGE_HANDLER_NAME)
         config.userContentController = userContentController
-        return WKWebView(frame: .zero, configuration: config)
+        let webview = WKWebView(frame: .zero, configuration: config)
+        return webview
     }()
 
     init() {
@@ -49,11 +65,17 @@ class FrozenWebViewController: UIViewController, WKScriptMessageHandler {
     }
 
     required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        super.init(coder: aDecoder)
+    }
+
+    override func didMove(toParent parent: UIViewController?) {
+        if(parent == nil) {
+            webView.configuration.userContentController.removeScriptMessageHandler(forName: FrozenWebViewController.MESSAGE_HANDLER_NAME)
+        }
     }
 
     func loadMessage() {
-        webView.loadHTMLString(blankPage, baseURL: nil)
+        webView.loadHTMLString(inAppPage(consented: false), baseURL: nil)
     }
 
     override func loadView() {
@@ -61,6 +83,14 @@ class FrozenWebViewController: UIViewController, WKScriptMessageHandler {
     }
 
     func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
-        print(message.body as! String)
+        let event = message.body as! String
+        switch event {
+        case "onMessageReady":
+            messageDelegate?.onMessageReady()
+        case "onConsentReady":
+            messageDelegate?.onConsentReady()
+        default:
+            print(event)
+        }
     }
 }
