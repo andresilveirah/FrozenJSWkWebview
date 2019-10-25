@@ -14,6 +14,7 @@
 		821B3D8D235DB3B600F53037 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 821B3D8B235DB3B600F53037 /* LaunchScreen.storyboard */; };
 		821B3D98235DB3B600F53037 /* FrozenJSWkWebviewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 821B3D97235DB3B600F53037 /* FrozenJSWkWebviewTests.swift */; };
 		821B3DA3235DB3F800F53037 /* FrozenWebViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 821B3DA2235DB3F800F53037 /* FrozenWebViewController.swift */; };
+		82DA94652360B69000B71272 /* SpinnerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82DA94642360B69000B71272 /* SpinnerViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -38,6 +39,7 @@
 		821B3D97235DB3B600F53037 /* FrozenJSWkWebviewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FrozenJSWkWebviewTests.swift; sourceTree = "<group>"; };
 		821B3D99235DB3B600F53037 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		821B3DA2235DB3F800F53037 /* FrozenWebViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FrozenWebViewController.swift; sourceTree = "<group>"; };
+		82DA94642360B69000B71272 /* SpinnerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpinnerViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -86,6 +88,7 @@
 				821B3D8B235DB3B600F53037 /* LaunchScreen.storyboard */,
 				821B3D8E235DB3B600F53037 /* Info.plist */,
 				821B3DA2235DB3F800F53037 /* FrozenWebViewController.swift */,
+				82DA94642360B69000B71272 /* SpinnerViewController.swift */,
 			);
 			path = FrozenJSWkWebview;
 			sourceTree = "<group>";
@@ -199,6 +202,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				82DA94652360B69000B71272 /* SpinnerViewController.swift in Sources */,
 				821B3DA3235DB3F800F53037 /* FrozenWebViewController.swift in Sources */,
 				821B3D85235DB3B500F53037 /* ViewController.swift in Sources */,
 				821B3D83235DB3B500F53037 /* AppDelegate.swift in Sources */,

@@ -8,40 +8,71 @@
 import UIKit
 
 class ViewController: UIViewController, MessageDelegate {
-    @IBOutlet weak var consentContainerView: UIView!
+
+    @IBAction func onPrivacySettingsTap(_ sender: Any) {
+        startSpinner()
+        setupConsentController()
+    }
 
     var consentController: FrozenWebViewController?
 
-    func showConsentContainer() {
-        consentContainerView.isHidden = false
-        view.bringSubviewToFront(consentContainerView)
-    }
+    var spinnerController: SpinnerViewController?
 
-    func removeConsentController() {
-        consentContainerView.removeFromSuperview()
-        consentController?.willMove(toParent: nil)
-        consentController?.view.removeFromSuperview()
-        consentController?.removeFromParent()
+    func setupConsentController() {
+        consentController = FrozenWebViewController()
+        consentController?.messageDelegate = self
+        consentController?.loadMessage()
+        add(childController: consentController!)
     }
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        guard let controller = children.first as? FrozenWebViewController else  {
-            fatalError("Check storyboard for missing FrozenWebViewController")
-        }
-        consentController = controller
-        consentController?.messageDelegate = self
-        consentController?.loadMessage()
+        setupConsentController()
     }
 
-    // MessageDelegate
+    // Boilerplate code for managing the attaching/removing
+    // the webview without showing it to the user
+
+    private func showConsentView(_ controller: UIViewController?) {
+        controller?.view.frame = view.bounds
+        controller?.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+    }
+
+    private func add(childController controller: UIViewController) {
+        addChild(controller)
+        view.addSubview(controller.view)
+        controller.didMove(toParent: self)
+    }
+
+    private func remove(childController controller: UIViewController?) {
+        controller?.willMove(toParent: nil)
+        controller?.view.removeFromSuperview()
+        controller?.removeFromParent()
+    }
+
+    //  Boilerplate code for handling spinner view controller -------------
+
+    func startSpinner() {
+        let spinner = SpinnerViewController()
+        add(childController: spinner)
+        spinner.view.frame = view.bounds
+        spinnerController = spinner
+    }
+
+    func stopSpinner() {
+        remove(childController: spinnerController)
+    }
+
+    // MessageDelegate ---------------------------------------------------
 
     func onMessageReady() {
-        showConsentContainer()
+        stopSpinner()
+        showConsentView(consentController)
     }
 
     func onConsentReady() {
-        removeConsentController()
+        stopSpinner()
+        remove(childController: consentController)
     }
 }
 
